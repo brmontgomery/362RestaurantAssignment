@@ -10,14 +10,17 @@ c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(157): warning C40
 c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(167): warning C4018: '<': signed/unsigned mismatch
 c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(176): warning C4018: '<': signed/unsigned mismatch
 c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(269): warning C4018: '<': signed/unsigned mismatch
-c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(419): warning C4129: 'F': unrecognized character escape sequence
-  Menu.cpp
-c:\dev\362restaurantassignment\restaurantassignment\src\fooditem.h(21): warning C4091: 'typedef ': ignored on left of 'FoodCategories' when no variable is declared
-c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(145): warning C4018: '<': signed/unsigned mismatch
-c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(157): warning C4018: '<': signed/unsigned mismatch
-c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(167): warning C4018: '<': signed/unsigned mismatch
-c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(176): warning C4018: '<': signed/unsigned mismatch
-c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(269): warning C4018: '<': signed/unsigned mismatch
-c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(419): warning C4129: 'F': unrecognized character escape sequence
-  Generating Code...
+c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(418): warning C4129: 'F': unrecognized character escape sequence
+c:\dev\362restaurantassignment\restaurantassignment\src\orders.h(14): warning C4091: 'typedef ': ignored on left of 'OrderStatus' when no variable is declared
+c:\dev\362restaurantassignment\restaurantassignment\src\orders.h(22): warning C4091: 'typedef ': ignored on left of 'OrderCommandType' when no variable is declared
+c:\dev\362restaurantassignment\restaurantassignment\src\orders.h(190): warning C4018: '<': signed/unsigned mismatch
+c:\dev\362restaurantassignment\restaurantassignment\src\orders.h(213): warning C4806: '==': unsafe operation: no value of type 'bool' promoted to type 'int' can equal the given constant
+c:\dev\362restaurantassignment\restaurantassignment\src\orders.h(226): warning C4018: '<': signed/unsigned mismatch
+c:\dev\362restaurantassignment\restaurantassignment\src\orders.h(238): warning C4018: '<': signed/unsigned mismatch
+c:\dev\362restaurantassignment\restaurantassignment\src\orders.h(250): warning C4018: '<': signed/unsigned mismatch
+c:\dev\362restaurantassignment\restaurantassignment\src\orders.h(284): warning C4018: '<': signed/unsigned mismatch
+c:\dev\362restaurantassignment\restaurantassignment\src\orders.h(314): warning C4018: '<': signed/unsigned mismatch
+c:\dev\362restaurantassignment\restaurantassignment\src\orders.h(434): warning C4018: '<': signed/unsigned mismatch
+c:\dev\362restaurantassignment\restaurantassignment\src\orders.h(255): warning C4715: 'OrderQueue::getOrder': not all control paths return a value
+c:\dev\362restaurantassignment\restaurantassignment\src\menu.h(172): warning C4715: 'Menu::getMenuItem': not all control paths return a value
   RestaurantAssignment.vcxproj -> C:\dev\362RestaurantAssignment\RestaurantAssignment\Debug\RestaurantAssignment.exe

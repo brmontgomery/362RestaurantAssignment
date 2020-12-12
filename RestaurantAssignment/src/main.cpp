@@ -3,7 +3,7 @@
 
 
 #include "EmployeeAccount.h"
-#include "Menu.h"
+#include "Orders.h"
 
 void goToEmployeeInterface(std::string RestaurantName);
 void goToAdminInterface(std::string RestaurantName);
@@ -79,6 +79,8 @@ int main()
 
 			while (!isLoggedIn)
 			{
+				OrderController orders;
+
 				//figure out where the guest wants to go
 				std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 				std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
@@ -96,13 +98,9 @@ int main()
 				else if (userStr == "M" || userStr == "m") {
 					//go to the menu and order
 
+					orders.guestOrderInterface(RestaurantName);
 				}
-				else if (userStr == "O" || userStr == "o") {
-					//go to the order tracker
-
-					//Not being done
-
-				} if (userStr == "X" || userStr == "x") {
+				 if (userStr == "X" || userStr == "x") {
 					isLoggedIn = true;
 					exit = true;
 				}
@@ -123,23 +121,29 @@ void goToEmployeeInterface(std::string RestaurantName)
 
 	while (!exit)
 	{
+		OrderController orders;
+
 		std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 		std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
 
-		std::cout << "Would you like to enter Order manager(O/o) the Timeclock (I,i), or exit (X/x)?\n\n";
+		std::cout << "Would you like to enter Order manager(O/o) the Timeclock (T,t), or exit (X/x)?\n\n";
 
 		std::cin >> userStr;
 
 		if (userStr == "R" || userStr == "r") {
 			//go to reservation manager
+
+			//probably not being done
+		}
+		else if (userStr == "O" || userStr == "o") {
+			//go to order manager
+
+			orders.employeeOrderInterface(RestaurantName);
 		}
 		else if (userStr == "T" || userStr == "t") {
-			//go to table manager
-
-			//not being done
-		}
-		else if (userStr == "I" || userStr == "i") {
 			//go to timeclock
+
+			//probably not getting to this
 		}
 		else if (userStr == "X" || userStr == "x") {
 			exit = true;

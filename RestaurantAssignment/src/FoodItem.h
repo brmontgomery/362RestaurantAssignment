@@ -34,6 +34,15 @@ public:
 	FoodItem(std::string newName, float newPrice, FoodCategories newCategories, bool newActive) : name(newName), price(newPrice), category(newCategories), quantity(0), specialInstructions(""), active(newActive) {};
 	~FoodItem() {};
 
+	bool operator==(FoodItem& other) const
+	{
+		if (name == other.name && price == other.price && category == other.category && quantity == other.quantity && specialInstructions == other.specialInstructions && active == other.active) {
+			return true;
+		}
+
+		return false;
+	}
+
 	std::string getName() { return name; };
 	float getPrice() { return price; };
 	FoodCategories getCategory() { return category; };

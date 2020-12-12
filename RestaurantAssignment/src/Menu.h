@@ -182,7 +182,7 @@ public:
 		}
 	}
 
-	std::string printMenu(bool ordering = true)
+	FoodItem printMenu(bool ordering = true)
 	{
 		bool exitMenu = false;
 		std::string userStr;
@@ -285,14 +285,14 @@ public:
 
 					if (ordering) {
 						if (exists(userStr)) {
-							return userStr;
+							return getMenuItem(userStr);
 						}
 					}
 				}
 			}
 		}
 
-		return "";
+		return FoodItem();
 	}
 
 private:
@@ -315,7 +315,7 @@ public:
 	MenuController() { m_Menu = Menu::getMenu(); };
 	~MenuController() {};
 
-	std::string printMenu() {
+	FoodItem printMenu() {
 		return m_Menu->printMenu();
 	}
 
@@ -326,6 +326,8 @@ public:
 
 		while (!exit)
 		{
+			FoodItem foodItem;
+
 			std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 			std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
 
@@ -335,8 +337,6 @@ public:
 
 			if (userStr == "A" || userStr == "a") {
 				//add User
-
-				FoodItem foodItem;
 
 				std::cout << "\n\nWhat should the new food Item's name be?\n\n";
 
@@ -408,18 +408,17 @@ public:
 			}
 			else if (userStr == "D" || userStr == "d") {
 				//delete user
+				foodItem = printMenu();
 
-				userStr = printMenu();
-
-				if (m_Menu->exists(userStr))
+				if (m_Menu->exists(foodItem.getName()))
 				{
-					m_Menu->deactivateFoodItem(userStr);
+					m_Menu->deactivateFoodItem(foodItem.getName());
 				}
 				else {
 					std::cout << "\n\Food Item does not exist!.\n\n";
 				}
 			}
-			else if (userStr == "X" || userStr == "x") {
+			else if (foodItem.getName() == "") {
 				exit = true;
 			}
 			else {

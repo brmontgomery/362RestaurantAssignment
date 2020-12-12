@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include "FoodItem.h"
+#include "Menu.h"
 
 typedef enum class OrderStatus : uint16_t
 {
@@ -199,11 +200,11 @@ public:
 	bool addOrder(Order newOrder, OrderStatus newStatus = OrderStatus::Open)
 	{
 		input(newOrder);
-		orderList.push_back(newOrder);
+orderList.push_back(newOrder);
 
-		save();
+save();
 
-		return 0;
+return 0;
 	}
 
 	bool changeOrderStatus(std::string str, OrderStatus newStatus)
@@ -231,14 +232,16 @@ public:
 		return -1;
 	}
 
-	Order getOpenOrders(std::string str) {
-		int checkNum = std::stoi(str);
+	std::vector<Order> getOpenOrders() {
+		std::vector<Order> openList;
 
 		for (int i = 0; i < orderList.size(); i++) {
-			if (orderList[i].getNumber() == checkNum && orderList[i].getStatus() == OrderStatus::Open) {
-				return orderList[i];
+			if (orderList[i].getStatus() == OrderStatus::Open) {
+				openList.push_back(orderList[i]);
 			}
 		}
+
+		return openList;
 	}
 
 	Order getOrder(std::string str) {
@@ -251,6 +254,16 @@ public:
 		}
 	}
 
+	int getNextNumber() {
+		int largest = 0;
+		for (int i = 0; i < getOrderListSize(); i++) {
+			if (orderList[i].getNumber() > largest) {
+				largest = orderList[i].getNumber();
+			}
+		}
+		return largest;
+	}
+
 	//iterator funcs
 	Order getOrderFromIt(int it) {
 		return orderList[it];
@@ -258,6 +271,51 @@ public:
 
 	int getOrderListSize() {
 		return orderList.size();
+	}
+
+	void printOpenOrders() {
+		std::cout << "Open Orders\n\n\n";
+
+		std::cout << "Number        |    Status?\n";
+		std::cout << "              |";
+
+		std::vector<Order> openOrders = getOpenOrders();
+
+		for (int i = 0; i < openOrders.size(); i++) {
+			printOrder(openOrders[i]);
+		}
+	}
+
+	void printSingleOrder(Order order) {
+		std::cout << "Order " << order.getNumber() << "\n\n\n";
+
+		std::cout << "Number        |    Items?\n";
+		std::cout << "              |\n";
+
+		printOrder(order);
+	}
+
+	void printOrder(Order order) {
+		std::cout << order.getNumber();
+
+		if (order.getNumber() < 10) {
+			std::cout << "             |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity() << "\n";
+		}
+		else if (order.getNumber() < 100) {
+			std::cout << "            |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity() << "\n";
+		}
+		else if (order.getNumber() < 1000) {
+			std::cout << "           |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity() << "\n";
+		}
+		else {
+			std::cout << "          |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity() << "\n";
+		}
+
+		for (int i = 1; i < order.getItems().size(); i++) {
+			std::cout << "              |    " << order.getItems()[i].getName() << " x " << order.getItems()[i].getQuantity() << "\n";
+		}
+
+		std::cout << "\n";
 	}
 
 private:
@@ -271,7 +329,7 @@ private:
 	OrderQueue* orderList;
 
 public:
-	OrderIterator() { orderList = OrderQueue::getOrderQueue(); }
+	OrderIterator() : iteratorNum(0) { orderList = OrderQueue::getOrderQueue(); }
 
 	void next()
 	{
@@ -305,10 +363,10 @@ private:
 
 class OrderCommands {
 public:
+	OrderCommands() { m_OrderQueue = OrderQueue::getOrderQueue(); }
+
 	void execute(OrderCommandType type, std::string str, Order order = Order(OrderStatus::Canceled, 0, 0))
 	{
-		m_OrderQueue = OrderQueue::getOrderQueue();
-
 		if (type == OrderCommandType::AddOrder) {
 			m_OrderQueue->addOrder(order);
 		}
@@ -320,10 +378,182 @@ public:
 		}
 	}
 
+	void printOpenOrders() {
+		m_OrderQueue->printOpenOrders();
+	}
+
+	void printSingleOrder(std::string str) {
+		Order order = m_OrderQueue->getOrder(str);
+		m_OrderQueue->printSingleOrder(order);
+	}
+
+	void printSingleOrder(Order order) {
+		m_OrderQueue->printSingleOrder(order);
+	}
+
+	int getNextNumber() {
+		return m_OrderQueue->getNextNumber();
+	}
+
 private:
 	OrderQueue* m_OrderQueue;
 };
 
 class OrderController {
+private:
+	OrderCommands commands;
+	MenuController menu;
 
+public:
+	void guestOrderInterface(std::string RestaurantName) {
+		FoodItem item;
+		Order newOrder;
+		std::string userStr;
+		bool exit = false;
+
+
+		while (!exit) {
+			std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+			std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
+
+			std::cout << "Would you like to order (O/o), cancel an order (C/c), check an order's details (H/h), or exit (X/x)?\n\n";
+
+			std::cin >> userStr;
+
+			if (userStr == "O" || userStr == "o") {
+				bool done = false;
+
+				while (!done) {
+					std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+					std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
+
+					item = menu.printMenu();
+
+					if (item.getName() != "") {
+						bool added = false;
+						for (int i = 0; i < newOrder.getItems().size(); i++) {
+							if (!added) {
+								if (item.getName() == newOrder.getItems()[i].getName()) {
+									newOrder.getItems()[i].setQuantity(newOrder.getItems()[i].getQuantity() + 1);
+									added = true;
+								}
+							}
+						}
+						if (!added) {
+							newOrder.addItem(item);
+						}
+					}
+
+					bool correctResponse = false;
+					while (!correctResponse) {
+						std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+						std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
+
+						std::cout << "Would you like to add another item to the order (A/a), proceed to payment (P/p), or cancel and exit (X/x)?\n\n";
+
+						std::cin >> userStr;
+
+
+						if (userStr == "A" || userStr == "a") {
+							// add to order
+							correctResponse = true;
+						}
+						else if (userStr == "P" || userStr == "p") {
+							//finalize order
+							std::cout << "\n\nReview your order.\n\n";
+
+							commands.printSingleOrder(newOrder);
+
+							std::cout << "Is this correct? Yes (Y/y) or No (N/n)?\n\n";
+
+							std::cin >> userStr;
+
+							if (userStr == "Y" || userStr == "y") {
+								newOrder.changeStatus(OrderStatus::Open);
+								newOrder.changePaid(true);
+								newOrder.setNumber(commands.getNextNumber());
+
+								commands.execute(OrderCommandType::AddOrder, "", newOrder);
+
+								std::cout << "\n\nOrder added!\n Your order ticket is " << newOrder.getNumber() << ". Please remember this number to recieve your order upon arrival. Thank you!\n\n";
+							}
+
+							correctResponse = true;
+						}
+						else if (userStr == "X" || userStr == "x") {
+							//go to make a reservation
+
+							std::cout << "\n\nOrder canceled.\n\n";
+							correctResponse = true;
+							done = true;
+						}
+						else {
+							std::cout << "\n\nPlease enter a correct response.\n\n";
+						}
+					}
+				}
+			} else if (userStr == "C" || userStr == "c") {
+				std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+				std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
+
+				std::cout << "Enter the order number of the order you wish to cancel.\n\n";
+
+				std::cin >> userStr;
+
+				commands.execute(OrderCommandType::CancelOrder, userStr);
+			}
+			else if (userStr == "H" || userStr == "h") {
+				std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+				std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
+
+				std::cout << "Enter the order number of the order you wish to check.\n\n";
+
+				std::cin >> userStr;
+
+				commands.printSingleOrder(userStr);
+			}
+			else if (userStr == "X" || userStr == "x") {
+				exit = true;
+			}
+		}
+	}
+
+	void employeeOrderInterface(std::string RestaurantName) {
+		std::string userStr;
+		bool exit = false;
+
+
+		while (!exit) {
+			std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+			std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
+
+			std::cout << "Would you like to close an order (C/c), check an order's details (H/h), or exit (X/x)?\n\n";
+
+			std::cin >> userStr;
+
+			if (userStr == "C" || userStr == "c") {
+				std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+				std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
+
+				std::cout << "Enter the order number of the order you wish to close.\n\n";
+
+				std::cin >> userStr;
+
+				commands.execute(OrderCommandType::CompleteOrder, userStr);
+			}
+			else if (userStr == "H" || userStr == "h") {
+				std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+				std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
+
+				std::cout << "Enter the order number of the order you wish to check.\n\n";
+
+				std::cin >> userStr;
+
+				commands.printSingleOrder(userStr);
+			}
+			else if (userStr == "X" || userStr == "x") {
+				exit = true;
+			}
+		}
+	}
 };
