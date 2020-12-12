@@ -16,25 +16,36 @@ typedef enum class FoodCategories : uint16_t
 	Soup = 7,
 	Entree = 8,
 	Vegetarian = 9,
-	Vegan = 10
+	Vegan = 10,
+	None = 11
 };
 
 class FoodItem {
 private:
 	std::string name;
 	float price;
-	FoodCategories categories;
+	FoodCategories category;
 	int quantity;
 	std::string specialInstructions;
+	bool active;
 
 public:
 	FoodItem() {};
-	FoodItem(float newPrice, FoodCategories newCategories) : price(newPrice), categories(newCategories), quantity(0), specialInstructions("") {};
+	FoodItem(std::string newName, float newPrice, FoodCategories newCategories, bool newActive) : name(newName), price(newPrice), category(newCategories), quantity(0), specialInstructions(""), active(newActive) {};
 	~FoodItem() {};
 
 	std::string getName() { return name; };
 	float getPrice() { return price; };
-	bool isInCategory(FoodCategories checkCat) { return categories == checkCat; };
+	FoodCategories getCategory() { return category; };
 	int getQuantity() { return quantity; };
 	std::string getSpecialInstructions() { return specialInstructions; };
+	bool getActive() { return active; };
+	bool isInCategory(FoodCategories checkCat) { return category == checkCat; };
+
+	void setName(std::string newName) { name = newName; };
+	void setPrice(float newPrice) { price = newPrice; };
+	void setCategory(FoodCategories newCat) { category = newCat; };
+	void setQuantity(int newQuantity) { quantity = newQuantity; };
+	void setSpecialInstructions(std::string newSpecInst) { specialInstructions = newSpecInst; };
+	void setActive(bool newActive) { active = newActive; };
 };

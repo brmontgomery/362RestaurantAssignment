@@ -73,16 +73,13 @@ private:
 
 	//non-singleton
 public:
-	int input(Order newOrder)
+	int input(Order newOrder, bool isNew = true)
 	{
 		// Object to write in file
 		std::ofstream file_obj;
 
 		// Opening file in append mode
 		file_obj.open("OrderList.txt", std::ios::app);
-
-		// Object of class contestant to input data in file
-		Order obj;
 
 		// Feeding appropriate data in variables
 		int size = newOrder.getItems().size();
@@ -103,6 +100,10 @@ public:
 
 		size = newOrder.getNumber();
 		file_obj.write((char*)&size, sizeof(size));
+
+		if (isNew) {
+			orderList.push_back(newOrder);
+		}
 
 		file_obj.close();
 
@@ -176,6 +177,20 @@ public:
 		return 0;
 	}
 
+	void save() {
+		// Object to write in file
+		std::ofstream file_obj;
+		file_obj.open("OrderList.txt", std::ofstream::out | std::ofstream::trunc);
+		file_obj.close();
+
+		// Opening file in append mode
+		file_obj.open("OrderList.txt");
+
+		for (int i = 0; i < orderList.size(); i++) {
+			input(orderList[i], false);
+		}
+	}
+
 	bool file_is_empty(std::ifstream& pFile)
 	{
 		return pFile.peek() == std::ifstream::traits_type::eof();
@@ -185,6 +200,8 @@ public:
 	{
 		input(newOrder);
 		orderList.push_back(newOrder);
+
+		save();
 
 		return 0;
 	}
@@ -196,6 +213,8 @@ public:
 			orderList[place].changeStatus(newStatus);
 		}
 
+		save();
+
 		return false;
 	}
 
@@ -204,7 +223,7 @@ public:
 
 		//inefficient finder
 		for (int i = 0; i < orderList.size(); i++) {
-			if (orderList[i].getNumber() == checkNum && orderList[i].getStatus() == OrderStatus::Open) {
+			if (orderList[i].getNumber() == checkNum) {
 				return i;
 			}
 		}
@@ -227,7 +246,6 @@ public:
 
 		for (int i = 0; i < orderList.size(); i++) {
 			if (orderList[i].getNumber() == checkNum) {
-				orderList.end();
 				return orderList[i];
 			}
 		}
