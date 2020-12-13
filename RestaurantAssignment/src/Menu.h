@@ -110,6 +110,7 @@ public:
 
 				obj.setPrice(price);
 				obj.setActive(active);
+				obj.setQuantity(0);
 
 				if (obj.getActive()) {
 					menuList.push_back(FoodItem(obj));
@@ -123,6 +124,7 @@ public:
 			FoodItem FoodItemToAdd;
 
 			FoodItemToAdd = FoodItem("default", 0.0f, FoodCategories::None, true);
+			FoodItemToAdd.setQuantity(0);
 
 			input(FoodItemToAdd);
 			menuList.push_back(FoodItem(FoodItemToAdd));
@@ -269,7 +271,7 @@ public:
 					for (int i = 0; i < menuList.size(); i++) {
 						if (menuList[i].getCategory() == choice) {
 							std::cout << menuList[i].getName();
-							for (int j = menuList[i].getName().size() - 1; j < 30; j++) {
+							for (int j = menuList[i].getName().size() - 1; j < 29; j++) {
 								std::cout << " ";
 							}
 							std::cout << "|    " << std::to_string(menuList[i].getPrice()) << "\n";

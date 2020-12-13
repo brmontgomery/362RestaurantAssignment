@@ -85,7 +85,7 @@ int main()
 				std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 				std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
 
-				std::cout << "Would you like to enter the Reservation System (R/r), the Menu (M/m), or exit (X/x)?\n\n";
+				std::cout << "Would you like to enter the Menu (M/m), or exit (X/x)?\n\n";
 
 				std::cin >> userStr;
 
@@ -126,7 +126,7 @@ void goToEmployeeInterface(std::string RestaurantName)
 		std::cout << "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
 		std::cout << RestaurantName << std::endl << std::endl << std::endl << std::endl;
 
-		std::cout << "Would you like to enter Order manager(O/o) the Timeclock (T,t), or exit (X/x)?\n\n";
+		std::cout << "Would you like to enter Order manager(O/o) or exit (X/x)?\n\n";
 
 		std::cin >> userStr;
 

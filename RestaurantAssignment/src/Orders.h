@@ -33,10 +33,26 @@ private:
 public:
 	Order() {}
 	Order(OrderStatus newStatus, bool newPaid, int newNumber) : status(newStatus), paid(newPaid), number(newNumber) {}
+	Order(const Order& a2) { orderFoodItems = a2.orderFoodItems; status = a2.status; paid = a2.paid; number = a2.number; }
+	
 	// FoodItem manipulation
 	std::vector<FoodItem> getItems() { return orderFoodItems; }
+
 	void addItem(FoodItem newItem) { orderFoodItems.push_back(newItem); }
-	void removeItem(int itemNum) { orderFoodItems.erase(orderFoodItems.begin() + itemNum - 1); }
+
+	int findItem(std::string str) {
+		for (int i = 0; i < orderFoodItems.size(); i++) {
+			if (orderFoodItems[i].getName() == str) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	void setItem(FoodItem newItem, int pos) {
+		orderFoodItems[pos] = newItem;
+	}
 
 	OrderStatus getStatus() { return status; }
 	bool getPaid() { return paid; }
@@ -51,6 +67,16 @@ public:
 	{
 		changeStatus(OrderStatus::Closed);
 		return true;
+	}
+
+	float getTotal() {
+		float total = 0.0f;
+
+		for (int i = 0; i < orderFoodItems.size(); i++) {
+			total += orderFoodItems[i].getPrice() * orderFoodItems[i].getQuantity();
+		}
+
+		return total;
 	}
 };
 
@@ -88,9 +114,39 @@ public:
 		file_obj.write((char*)&size, sizeof(size));
 
 		for (int i = 0; i < size; i++) {
-			FoodItem tempItem = newOrder.getItems()[i];
+			//insert name
+			int size2 = newOrder.getItems()[i].getName().size();
+			file_obj.write((char*)&size2, sizeof(size2));
 
-			file_obj.write((char*)&tempItem, sizeof(tempItem));
+			for (int j = 0; j < size2; j++) {
+				char myChar = newOrder.getItems()[i].getName()[j];
+				file_obj.write((char*)&myChar, sizeof(myChar));
+			}
+
+			//insert special instructions
+			size2 = newOrder.getItems()[i].getSpecialInstructions().size();
+			file_obj.write((char*)&size2, sizeof(size2));
+
+			for (int j = 0; j < size2; j++) {
+				char myChar = newOrder.getItems()[i].getSpecialInstructions()[j];
+				file_obj.write((char*)&myChar, sizeof(myChar));
+			}
+
+			//insert price
+			float price = newOrder.getItems()[i].getPrice();
+			file_obj.write((char*)&price, sizeof(price));
+
+			//insert food categories
+			FoodCategories cat = newOrder.getItems()[i].getCategory();
+			file_obj.write((char*)&cat, sizeof(cat));
+
+			//insert quantity
+			int quantity = newOrder.getItems()[i].getQuantity();
+			file_obj.write((char*)&quantity, sizeof(quantity));
+
+			//insert active
+			bool active = newOrder.getItems()[i].getActive();
+			file_obj.write((char*)&active, sizeof(active));
 		}
 
 		OrderStatus status = newOrder.getStatus();
@@ -140,7 +196,45 @@ public:
 				//get vector Items
 				for (int i = 0; i < size; i++)
 				{
-					file_obj.read((char*)&foodObj, sizeof(foodObj));
+					//read name
+					int size2;
+					file_obj.read((char*)&size2, sizeof(size2));
+
+					std::string name = "";
+					for (int j = 0; j < size2; j++) {
+						char myChar;
+						file_obj.read((char*)&myChar, sizeof(myChar));
+						name += myChar;
+					}
+					foodObj.setName(name);
+
+					//read name
+					size2;
+					file_obj.read((char*)&size2, sizeof(size2));
+
+					std::string specialInstructions = "";
+					for (int j = 0; j < size2; j++) {
+						char myChar;
+						file_obj.read((char*)&myChar, sizeof(myChar));
+						name += myChar;
+					}
+					foodObj.setSpecialInstructions(specialInstructions);
+
+					float price;
+					file_obj.read((char*)&price, sizeof(price));
+					foodObj.setPrice(price);
+
+					FoodCategories cat;
+					file_obj.read((char*)&cat, sizeof(cat));
+					foodObj.setCategory(cat);
+
+					int quantity;
+					file_obj.read((char*)&quantity, sizeof(quantity));
+					foodObj.setQuantity(quantity);
+
+					bool active;
+					file_obj.read((char*)&active, sizeof(active));
+					foodObj.setActive(active);
 
 					obj.addItem(foodObj);
 				}
@@ -170,7 +264,6 @@ public:
 			Order orderToAdd = Order(OrderStatus::Canceled, 0, 0);
 
 			input(orderToAdd);
-			orderList.push_back(Order(orderToAdd));
 		}
 
 		file_obj.close();
@@ -190,6 +283,8 @@ public:
 		for (int i = 0; i < orderList.size(); i++) {
 			input(orderList[i], false);
 		}
+
+		file_obj.close();
 	}
 
 	bool file_is_empty(std::ifstream& pFile)
@@ -200,17 +295,16 @@ public:
 	bool addOrder(Order newOrder, OrderStatus newStatus = OrderStatus::Open)
 	{
 		input(newOrder);
-orderList.push_back(newOrder);
 
-save();
+		save();
 
-return 0;
+		return 0;
 	}
 
 	bool changeOrderStatus(std::string str, OrderStatus newStatus)
 	{
 		int place = exists(str);
-		if (!place == -1) {
+		if (place != 0) {
 			orderList[place].changeStatus(newStatus);
 		}
 
@@ -229,7 +323,7 @@ return 0;
 			}
 		}
 
-		return -1;
+		return 0;
 	}
 
 	std::vector<Order> getOpenOrders() {
@@ -261,7 +355,7 @@ return 0;
 				largest = orderList[i].getNumber();
 			}
 		}
-		return largest;
+		return largest + 1;
 	}
 
 	//iterator funcs
@@ -277,7 +371,7 @@ return 0;
 		std::cout << "Open Orders\n\n\n";
 
 		std::cout << "Number        |    Status?\n";
-		std::cout << "              |";
+		std::cout << "              |\n";
 
 		std::vector<Order> openOrders = getOpenOrders();
 
@@ -289,7 +383,7 @@ return 0;
 	void printSingleOrder(Order order) {
 		std::cout << "Order " << order.getNumber() << "\n\n\n";
 
-		std::cout << "Number        |    Items?\n";
+		std::cout << "Number        |    Items                 |    Status\n";
 		std::cout << "              |\n";
 
 		printOrder(order);
@@ -298,24 +392,45 @@ return 0;
 	void printOrder(Order order) {
 		std::cout << order.getNumber();
 
-		if (order.getNumber() < 10) {
-			std::cout << "             |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity() << "\n";
-		}
-		else if (order.getNumber() < 100) {
-			std::cout << "            |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity() << "\n";
-		}
-		else if (order.getNumber() < 1000) {
-			std::cout << "           |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity() << "\n";
-		}
-		else {
-			std::cout << "          |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity() << "\n";
-		}
+			if (order.getNumber() < 10) {
+				std::cout << "             |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity();
+			}
+			else if (order.getNumber() < 100) {
+				std::cout << "            |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity() << "\n";
+			}
+			else if (order.getNumber() < 1000) {
+				std::cout << "           |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity() << "\n";
+			}
+			else {
+				std::cout << "          |    " << order.getItems()[0].getName() << " x " << order.getItems()[0].getQuantity() << "\n";
+			}
 
-		for (int i = 1; i < order.getItems().size(); i++) {
-			std::cout << "              |    " << order.getItems()[i].getName() << " x " << order.getItems()[i].getQuantity() << "\n";
-		}
+			for (int i = order.getItems()[0].getName().size() + 4; i < 22; i++) {
+				std::cout << " ";
+			}
+			std::cout << "|    ";
 
-		std::cout << "\n";
+			switch (order.getStatus()) {
+			case OrderStatus::Open:
+				std::cout << "Open\n";
+				break;
+			case OrderStatus::Closed:
+				std::cout << "Closed\n";
+				break;
+			case OrderStatus::Canceled:
+				std::cout << "Canceled\n";
+				break;
+			}
+
+			for (int i = 1; i < order.getItems().size(); i++) {
+				std::cout << "              |    " << order.getItems()[i].getName() << " x " << order.getItems()[i].getQuantity();
+				for (int j = order.getItems()[i].getName().size() + 4; j < 22; j++) {
+					std::cout << " ";
+				}
+				std::cout << "|\n";
+			}
+
+			std::cout << "\n\nTotal price:       $" << order.getTotal() << "\n\n";
 	}
 
 private:
@@ -383,8 +498,10 @@ public:
 	}
 
 	void printSingleOrder(std::string str) {
-		Order order = m_OrderQueue->getOrder(str);
-		m_OrderQueue->printSingleOrder(order);
+		if (str != "0") {
+			Order order = m_OrderQueue->getOrder(str);
+			m_OrderQueue->printSingleOrder(order);
+		}
 	}
 
 	void printSingleOrder(Order order) {
@@ -434,12 +551,15 @@ public:
 						for (int i = 0; i < newOrder.getItems().size(); i++) {
 							if (!added) {
 								if (item.getName() == newOrder.getItems()[i].getName()) {
-									newOrder.getItems()[i].setQuantity(newOrder.getItems()[i].getQuantity() + 1);
+									FoodItem item = newOrder.getItems()[i];
+									item.setQuantity(item.getQuantity() + 1);
+									newOrder.setItem(item, i);
 									added = true;
 								}
 							}
 						}
 						if (!added) {
+							item.setQuantity(item.getQuantity() + 1);
 							newOrder.addItem(item);
 						}
 					}
@@ -475,10 +595,13 @@ public:
 
 								commands.execute(OrderCommandType::AddOrder, "", newOrder);
 
-								std::cout << "\n\nOrder added!\n Your order ticket is " << newOrder.getNumber() << ". Please remember this number to recieve your order upon arrival. Thank you!\n\n";
+								std::cout << "\n\nOrder added!\n Your order ticket is " << newOrder.getNumber() << ". Please remember this number to recieve your order upon arrival. Thank you!\nPress any key and enter to continue.\n";
+
+								std::cin >> userStr;
 							}
 
 							correctResponse = true;
+							done = true;
 						}
 						else if (userStr == "X" || userStr == "x") {
 							//go to make a reservation
@@ -511,6 +634,9 @@ public:
 				std::cin >> userStr;
 
 				commands.printSingleOrder(userStr);
+
+				std::cout << "Press any key and enter to continue.\n\n";
+				std::cin >> userStr;
 			}
 			else if (userStr == "X" || userStr == "x") {
 				exit = true;
@@ -550,6 +676,9 @@ public:
 				std::cin >> userStr;
 
 				commands.printSingleOrder(userStr);
+
+				std::cout << "Press any key and enter to continue.\n\n";
+				std::cin >> userStr;
 			}
 			else if (userStr == "X" || userStr == "x") {
 				exit = true;
